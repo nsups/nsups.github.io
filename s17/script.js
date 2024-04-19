@@ -44,11 +44,12 @@ for (handle in participants_names) {
 }
 
 
-
 function addDataToTable(entries) {
     let totalWeightedProblemCount = 0;
+    let totalProblemCount = 0;
     for (let i in contests) {
         totalWeightedProblemCount += contests[i][1] * contests[i][2];  
+        totalProblemCount += contests[i][1];
     }
 
     const tbody = document.createElement('tbody');
@@ -62,7 +63,7 @@ function addDataToTable(entries) {
     head_row.appendChild(nameCol);
 
     const totSolCol = document.createElement('td');
-    totSolCol.textContent = `Solved (${totalWeightedProblemCount.toFixed(0)})`;
+    totSolCol.textContent = `Solved (${totalProblemCount.toFixed(0)})`;
     head_row.appendChild(totSolCol);
 
     if (ELIGIBILITY.require) {
@@ -94,6 +95,7 @@ function addDataToTable(entries) {
         tr.appendChild(rank);
         
         const totalWeightedSolves = entries[i][1].totalWeightedSolves;
+        const totalSolved = entries[i][1].totalSolved;
         const p = Math.round((totalWeightedSolves * 100) / totalWeightedProblemCount);
 
         const participantName = document.createElement('td');
@@ -113,7 +115,7 @@ function addDataToTable(entries) {
         tr.appendChild(participantName);
 
         const totSolved = document.createElement('td');
-        totSolved.innerHTML = `${totalWeightedSolves.toFixed(0)} [ <strong>${p}% </strong>]`;
+        totSolved.innerHTML = `${totalSolved.toFixed(0)} [ <strong>${p}% </strong>]`;
         totSolved.style.backgroundColor = getColor(p);
         tr.appendChild(totSolved);
 
@@ -160,7 +162,7 @@ function addDataToTable(entries) {
 async function run_it() {
     const temp_table = {};
     for (let i in lowerCaseHandle_to_Original) {
-        temp_table[i] = {totalWeightedSolves: 0, totalWeightedAvailable: 0};
+        temp_table[i] = {totalSolved :0 ,totalWeightedSolves: 0, totalWeightedAvailable: 0};
     }
 
     const solveCountPromises = Object.entries(contests).map(async ([contestId, contest]) => {
@@ -176,6 +178,7 @@ async function run_it() {
             if (lowerCaseHandle_to_Original.hasOwnProperty(handle)) {
                 const problemsSolved = solveCount[handle].size;
                 temp_table[handle][contestId] = problemsSolved;
+                temp_table[handle].totalSolved += problemsSolved;
                 temp_table[handle].totalWeightedSolves += problemsSolved * weight;
                 temp_table[handle].totalWeightedAvailable += contests[contestId][1] * weight;
             }
