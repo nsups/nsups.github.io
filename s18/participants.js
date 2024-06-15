@@ -1,0 +1,34 @@
+const participants_names = {   
+  'Micycle_Bobert':	'Aoutul Nabi Purna',
+  '12_34'	:'Fatema Hossain',
+  'salma987'	:'Salma Hossain',
+  'Sium02'	:'Md. Abdul Wadud',
+  'Isharaq_200q':	'Ishraq Hossain Rodro',
+  'ahsanul7haque'	:'Ahsanul Haque',
+  'abdullahxsalim':	'Abdullah Salim',
+  'so_what_'	:'Sowad Hossain',
+  'myself_tanvir805':	'Md. Tanvir Islam',
+  'flying_neuron'	:'Sumon Das',
+  'jaima23'	:'Jaima Islam Sadia',
+  'itachi47'	:'Farhin Ahmed Pranto',
+  'Megh_AbdulAhad':	'Md. Abdul Ahad',
+  'far_hana' :'Farhana Akter',
+}
+
+const ELIGIBILITY = {
+	require: true, 
+	target: 80.00, // %
+}
+
+const ELIMINATION = {
+    active: false,
+    target: 15,
+}
+
+const contests = {
+  627792: ["Selection", 10, 0.5],
+  629334: ["Week1", 26, 1],
+  630239: ["Indi1", 8, 1],
+  630604: ["Week2", 26, 1],  
+};
+
