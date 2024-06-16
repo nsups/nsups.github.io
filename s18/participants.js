@@ -13,7 +13,7 @@ const participants_names = {
   "itachi47": "Farhin Ahmed Pranto",
   "Megh_AbdulAhad": "Md. Abdul Ahad",
   "far_hana": "Farhana Akter",
-  "Tamjid Islam": "reptile",
+  "reptile": "Tamjid Islam",
   "norizz_codes": "rizwan arif",
   "junayed_02": "Md. Shakib Shahariar Junayed",
   "ahnaf2002": "Ahnaf Akib Ahmed",
