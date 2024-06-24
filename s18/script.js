@@ -1,54 +1,56 @@
-async function getSolveCountsOfContestById(id) {
-    const response = await fetch(`https://vjudge.net/contest/rank/single/${id}`)
-	const json_response = await response.json();
-	const submissions_info = json_response['submissions'];
-	const participants_info = json_response['participants'];
-	const userid_to_handle = {};
-	for (let i in participants_info) {
-		userid_to_handle[i] = participants_info[i][0].toLocaleLowerCase();
-	}
-	const participant_solved_problems = {};
-	for (let i in submissions_info) {
-		const problemId = submissions_info[i][1],
-			user_id = userid_to_handle[submissions_info[i][0]],
-			verdict = submissions_info[i][2];
-		if (!participant_solved_problems.hasOwnProperty(user_id)) {
-			participant_solved_problems[user_id] = new Set();
-		}
-		if (verdict == 1) {
-			participant_solved_problems[user_id].add(problemId);
-		}
-	}
-	return participant_solved_problems;
-}
 const table = document.querySelector('table');
+
 function getColor(percent) {
-	percent = Math.min(100, Math.max(0, percent));
-	var red = percent < 50 ? 255 : Math.round(255 - (percent - 50) * 5.1);
-	var green = percent > 50 ? 255 : Math.round((percent * 5.1));
-	var color = 'rgb(' + red + ',' + green + ', 0)';
-	return color;
+    percent = Math.min(100, Math.max(0, percent));
+    var red = percent < 50 ? 255 : Math.round(255 - (percent - 50) * 5.1);
+    var green = percent > 50 ? 255 : Math.round((percent * 5.1));
+    var color = 'rgb(' + red + ',' + green + ', 0)';
+    return color;
 }
 
 function getColorMatte(percent) {
-	percent = Math.min(100, Math.max(0, percent));
-	var red = percent < 50 ? 255 : Math.round(255 - (percent - 50) * 5.1);
-	var green = percent > 50 ? 255 : Math.round((percent * 5.1));
-	var color = 'rgba(' + red + ',' + green + ',0, 0.3)';
-	return color;
+    percent = Math.min(100, Math.max(0, percent));
+    var red = percent < 50 ? 255 : Math.round(255 - (percent - 50) * 5.1);
+    var green = percent > 50 ? 255 : Math.round((percent * 5.1));
+    var color = 'rgba(' + red + ',' + green + ',0, 0.3)';
+    return color;
 }
 
 const lowerCaseHandle_to_Original = {};
 for (handle in participants_names) {
-	lowerCaseHandle_to_Original[handle.toLocaleLowerCase()] = handle;
+    lowerCaseHandle_to_Original[handle.toLocaleLowerCase()] = handle;
 }
 
+
+async function getSolveCountsOfContestById(id) {
+    const response = await fetch(`https://vjudge.net/contest/rank/single/${id}`);
+    const json_response = await response.json();
+    const submissions_info = json_response['submissions'];
+    const participants_info = json_response['participants'];
+    const userid_to_handle = {};
+    for (let i in participants_info) {
+        userid_to_handle[i] = participants_info[i][0].toLocaleLowerCase();
+    }
+    const participant_solved_problems = {};
+    for (let i in submissions_info) {
+        const problemId = submissions_info[i][1],
+            user_id = userid_to_handle[submissions_info[i][0]],
+            verdict = submissions_info[i][2];
+        if (!participant_solved_problems.hasOwnProperty(user_id)) {
+            participant_solved_problems[user_id] = new Set();
+        }
+        if (verdict == 1) {
+            participant_solved_problems[user_id].add(problemId);
+        }
+    }
+    return participant_solved_problems;
+}
 
 function addDataToTable(entries) {
     let totalWeightedProblemCount = 0;
     let totalProblemCount = 0;
     for (let i in contests) {
-        totalWeightedProblemCount += contests[i][1] * contests[i][2];  
+        totalWeightedProblemCount += contests[i][1] * contests[i][2];
         totalProblemCount += contests[i][1];
     }
 
@@ -66,12 +68,12 @@ function addDataToTable(entries) {
     totSolCol.textContent = `Solved (${totalProblemCount.toFixed(0)})`;
     head_row.appendChild(totSolCol);
 
-    if (ELIGIBILITY.require) {
-        const elCol = document.createElement('td');
-        elCol.textContent = `${ELIGIBILITY.target}%`;
-        elCol.classList.add('eligibility-col');
-        head_row.appendChild(elCol);
-    }
+    const elCol = document.createElement('td');
+    elCol.textContent = 'Eligibility';
+    elCol.style.fontSize = '0.6em';
+    
+    elCol.classList.add('eligibility-col');
+    head_row.appendChild(elCol);
 
     for (let i in contests) {
         const th = document.createElement('td');
@@ -81,19 +83,25 @@ function addDataToTable(entries) {
         contestHyperLink.target = '_blank';
         contestHyperLink.textContent = `${contests[i][0]} (${contests[i][1]})`;
         th.appendChild(contestHyperLink);
+
+        const requiredSolvesText = document.createElement('div');
+        requiredSolvesText.textContent = `Required: ${contests[i][3]}`;
+        requiredSolvesText.style.fontSize = '0.8em';
+        th.appendChild(requiredSolvesText);
+
         head_row.appendChild(th);
     }
     tbody.appendChild(head_row);
 
     let participant_rank = 1;
-    
+
     for (let i in entries) {
         const user = entries[i][0];
         const tr = document.createElement('tr');
         const rank = document.createElement('td');
         rank.textContent = `${participant_rank++}`;
         tr.appendChild(rank);
-        
+
         const totalWeightedSolves = entries[i][1].totalWeightedSolves;
         const totalSolved = entries[i][1].totalSolved;
         const p = Math.round((totalWeightedSolves * 100) / totalWeightedProblemCount);
@@ -118,28 +126,34 @@ function addDataToTable(entries) {
         totSolved.innerHTML = `${totalSolved.toFixed(0)} [ <strong>${p}% </strong>]`;
         totSolved.style.backgroundColor = getColor(p);
         tr.appendChild(totSolved);
+        
 
+        let isEligible = true;
+        
         if (ELIGIBILITY.require) {
-            const eligible = document.createElement('td');
-            eligible.classList.add('eligibility-col');
+            const elCol = document.createElement('td');
+            elCol.classList.add('eligibility-col');
             if (p >= ELIGIBILITY.target) {
-                eligible.innerHTML = `<i class="fa-solid fa-square-check"></i>`;
-                eligible.style.color = 'green';
+                elCol.innerHTML = `<i class="fa-solid fa-check fa-lg"></i>`;
+                elCol.style.color = 'green';
             } else {
-                eligible.innerHTML = `<i class="fa-solid fa-square-xmark"></i>`;
-                eligible.style.color = 'red';
+                elCol.innerHTML = `<i class="fa-solid fa-xmark fa-lg"></i>`;
+                elCol.style.color = 'red';
+                isEligible = false;
             }
-            tr.appendChild(eligible);
+            // tr.appendChild(elCol);
         }
-
-        const user_contest = entries[i][1];
+        
         for (let c in contests) {
+            const requiredSolves = contests[c][3];
+
             let solvecnt = 0;
             const td = document.createElement('td');
-            if (user_contest.hasOwnProperty(c)) {
-                solvecnt = user_contest[c];
-                if (solvecnt == contests[c][1]) {
+            if (entries[i][1].hasOwnProperty(c)) {
+                solvecnt = entries[i][1][c];
+                if (solvecnt >= requiredSolves) {
                     td.innerHTML = `<i class="fa-solid fa-check fa-lg"></i>`;
+                    td.style.color = 'green';
                 } else {
                     td.innerHTML = `${solvecnt}`;
                 }
@@ -148,9 +162,24 @@ function addDataToTable(entries) {
             }
             td.style.backgroundColor = getColorMatte((solvecnt * 100) / (contests[c][1]));
             tr.appendChild(td);
+
+            if (solvecnt < requiredSolves) {
+                isEligible = false;
+            }
         }
 
-        if (ELIMINATION.active && p < ELIMINATION.target) {
+        const elCol = document.createElement('td');
+        elCol.classList.add('eligibility-col');
+        if (isEligible) {
+            elCol.innerHTML = `<i class="fa-solid fa-square-check"></i>`;
+            elCol.style.color = 'green';
+        } else {
+            elCol.innerHTML = `<i class="fa-solid fa-square-xmark"></i>`;
+            elCol.style.color = 'red';
+        }
+        tr.insertBefore(elCol, tr.children[3]);
+
+        if (ELIMINATION.active && !isEligible) {
             tr.classList.add('eliminated');
         }
         tbody.appendChild(tr);
@@ -158,11 +187,10 @@ function addDataToTable(entries) {
     table.appendChild(tbody);
 }
 
-
 async function run_it() {
     const temp_table = {};
     for (let i in lowerCaseHandle_to_Original) {
-        temp_table[i] = {totalSolved :0 ,totalWeightedSolves: 0, totalWeightedAvailable: 0};
+        temp_table[i] = { totalSolved: 0, totalWeightedSolves: 0, totalWeightedAvailable: 0 };
     }
 
     const solveCountPromises = Object.entries(contests).map(async ([contestId, contest]) => {
@@ -189,6 +217,5 @@ async function run_it() {
     entries.sort((a, b) => b[1].totalWeightedSolves - a[1].totalWeightedSolves);
     addDataToTable(entries);
 }
-  
 
 run_it();

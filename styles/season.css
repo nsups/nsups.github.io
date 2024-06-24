@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    white-space: nowrap; 
+}
+
+body {
+    font-family: 'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-size: medium;
+    line-height: 25px;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: center;
+    display: block;
+}
+
+tbody tr:first-child {
+    background-color: #EFEFEF;
+    font-weight: bold;
+    border: solid 1px gray;
+}
+
+tbody {
+    display: block;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+td, th {
+    min-width: 100px;
+    height: 25px;
+    border: dotted 2px rgba(0, 0, 0, 0.3);
+}
+
+table tr:hover td {
+    border-top: solid 2px black;
+    border-bottom: solid 2px black;
+    background-color: #f0f0f0; 
+}
+
+.eligibility-col {
+    min-width: 45px !important;
+    max-width: 45px !important;
+}
+
+.eligibility-col i {
+    font-size: x-large;
+}
+
+a:link, a:visited {
+    color: blue;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+}
+
+.participant {
+    padding: 0 1em;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.participant p.participant-name, .participant a.participant-handle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+}
+
+p.participant-name {
+    max-width: 20ch;
+}
+
+a.participant-handle {
+    max-width: 15ch;
+    font-size: smaller;
+}
+
+.eliminated .participant-name, .eliminated .participant-handle {
+    color: red;
+}
